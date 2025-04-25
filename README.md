@@ -29,7 +29,6 @@ import SwiftUI
 import OnFrame
 
 struct FrameView: View {
-  
   @Environment(\.timestamp) var timestamp
   
   var body: some View {
