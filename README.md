@@ -15,7 +15,7 @@ struct SampleView: View {
   
   var body: some View {
     Text("\(self.timestamp)")
-    	.onFrame { _ /* last frame timestamp */, timestamp /* target frame timestamp */ in
+      .onFrame { _ /* last frame timestamp */, timestamp /* target frame timestamp */ in
         self.timestamp = timestamp
       }
   }
@@ -40,7 +40,7 @@ struct FrameView: View {
 struct MainView: View {
   var body: some View {
     FrameView()
-    	.onFrame()
+      .onFrame()
   }
 }
 ````
