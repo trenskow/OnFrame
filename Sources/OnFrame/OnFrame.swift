@@ -8,7 +8,7 @@
 import SwiftUI
 
 @MainActor
-struct OnFrameDisplayLinkView: UIViewRepresentable {
+struct OnFrameDisplayLinkView: ViewRepresentable {
 
 	let action: @MainActor @Sendable (TimeInterval, TimeInterval) -> Void
 
@@ -46,23 +46,21 @@ struct OnFrameDisplayLinkView: UIViewRepresentable {
 
 	}
 
-	func makeCoordinator() -> Coordinator {
-
-		let coordinator = Coordinator(
-			action: self.action)
-
-		coordinator.displayLink = CADisplayLink(
-			target: coordinator,
-			selector: #selector(
-				Coordinator.displayLinkAction(displayLink:)))
-
-		return coordinator
-
+	static func dismantleView(
+		_ uiView: PlatformView,
+		coordinator: Coordinator
+	) {
+		coordinator.displayLink = nil
 	}
 
-	func makeUIView(context: Context) -> UIView {
+	func makeCoordinator() -> Coordinator {
+		return Coordinator(
+			action: self.action)
+	}
 
-		let view = UIView()
+	func makeView(context: Context) -> PlatformView {
+
+		let view = BackgroundColorView()
 
 		view.backgroundColor = .clear
 
@@ -70,10 +68,15 @@ struct OnFrameDisplayLinkView: UIViewRepresentable {
 
 	}
 
-	func updateUIView(
-		_ uiView: UIView,
+	func updateView(
+		_ uiView: PlatformView,
 		context: Context
-	) {}
+	) {
+		context.coordinator.displayLink = context.coordinator.displayLink ?? CADisplayLink.make(
+			target: context.coordinator,
+			selector: #selector(
+				Coordinator.displayLinkAction(displayLink:)))
+	}
 
 }
 
