@@ -54,8 +54,17 @@ struct OnFrameDisplayLinkView: ViewRepresentable {
 	}
 
 	func makeCoordinator() -> Coordinator {
-		return Coordinator(
+
+		let coordinator = Coordinator(
 			action: self.action)
+
+		coordinator.displayLink = CADisplayLink.make(
+			target: coordinator,
+			   selector: #selector(
+				   Coordinator.displayLinkAction(displayLink:)))
+
+		return coordinator
+
 	}
 
 	func makeView(context: Context) -> PlatformView {
@@ -71,12 +80,7 @@ struct OnFrameDisplayLinkView: ViewRepresentable {
 	func updateView(
 		_ uiView: PlatformView,
 		context: Context
-	) {
-		context.coordinator.displayLink = context.coordinator.displayLink ?? CADisplayLink.make(
-			target: context.coordinator,
-			selector: #selector(
-				Coordinator.displayLinkAction(displayLink:)))
-	}
+	) {}
 
 }
 
