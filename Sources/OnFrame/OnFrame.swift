@@ -10,8 +10,6 @@ import SwiftUI
 @MainActor
 struct OnFrameDisplayLinkView: ViewRepresentable {
 
-	let action: @MainActor @Sendable (TimeInterval, TimeInterval) -> Void
-
 	class Coordinator {
 
 		var displayLink: CADisplayLink? {
@@ -45,6 +43,9 @@ struct OnFrameDisplayLinkView: ViewRepresentable {
 		}
 
 	}
+
+	let paused: Bool
+	let action: @MainActor @Sendable (TimeInterval, TimeInterval) -> Void
 
 	static func dismantleView(
 		_ uiView: PlatformView,
@@ -80,7 +81,9 @@ struct OnFrameDisplayLinkView: ViewRepresentable {
 	func updateView(
 		_ uiView: PlatformView,
 		context: Context
-	) {}
+	) {
+		context.coordinator.displayLink?.isPaused = self.paused
+	}
 
 }
 
@@ -89,11 +92,14 @@ struct OnFrameModifier: ViewModifier {
 
 	@State private var lastTimeStamp: TimeInterval = 0
 
-	let action: (@MainActor @Sendable (TimeInterval, TimeInterval) -> Void)?
+	private let paused: Bool
+	private let action: (@MainActor @Sendable (TimeInterval, TimeInterval) -> Void)?
 
 	init(
+		paused: Bool,
 		action: (@MainActor @Sendable (TimeInterval, TimeInterval) -> Void)?
 	) {
+		self.paused = paused
 		self.action = action
 	}
 
@@ -101,6 +107,7 @@ struct OnFrameModifier: ViewModifier {
 		content
 			.background(
 				OnFrameDisplayLinkView(
+					paused: self.paused,
 					action: { oldTimeInterval, newTimeInterval in
 						self.lastTimeStamp = newTimeInterval
 						self.action?(oldTimeInterval, newTimeInterval)
@@ -116,10 +123,12 @@ extension View {
 
 	@MainActor
 	public func onFrame(
+		paused: Bool = false,
 		_ action: (@MainActor @Sendable (TimeInterval, TimeInterval) -> Void)? = nil
 	) -> some View {
 		self.modifier(
 			OnFrameModifier(
+				paused: paused,
 				action: action))
 	}
 
