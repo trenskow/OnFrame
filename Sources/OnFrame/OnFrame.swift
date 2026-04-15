@@ -61,14 +61,16 @@ struct OnFrameDisplayLinkView: ViewRepresentable {
 
 		coordinator.displayLink = CADisplayLink.make(
 			target: coordinator,
-			   selector: #selector(
-				   Coordinator.displayLinkAction(displayLink:)))
+			selector: #selector(
+				Coordinator.displayLinkAction(displayLink:)))
 
 		return coordinator
 
 	}
 
-	func makeView(context: Context) -> PlatformView {
+	func makeView(
+		context: Context
+	) -> PlatformView {
 
 		let view = BackgroundColorView()
 
@@ -103,7 +105,9 @@ struct OnFrameModifier: ViewModifier {
 		self.action = action
 	}
 
-	func body(content: Content) -> some View {
+	func body(
+		content: Content
+	) -> some View {
 		content
 			.background(
 				OnFrameDisplayLinkView(

@@ -65,10 +65,11 @@ extension ViewRepresentable {
 
 	func updateUIView(
 		_ uiView: PlatformViewType,
-		context: Context) {
-			return self.updateView(
-				uiView,
-				context: context)
+		context: Context
+	) {
+		return self.updateView(
+			uiView,
+			context: context)
 	}
 
 }
